@@ -169,6 +169,9 @@ app.put('/containers/:container_id/subdocs/:id/position', function (req, res, ne
         .exec((updateErr, dbRes) => {
           if (updateErr) return next(updateErr);
 
+          // NOTE: The container being returned at this point is not the updated
+          // container, so it will not contain the subdoc (since we removed it
+          // above). We would need to reload it from the db if we want it here.
           res.json({
             message: 'Subdoc updated.',
             container,

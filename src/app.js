@@ -119,10 +119,6 @@ app.post('/containers/:id/subdocs', function (req, res, next) {
 
 // Update subdoc for specific container.
 app.put('/containers/:container_id/subdocs/:id', function (req, res, next) {
-  const containerId = req.params.container_id;
-  const positionChanged = req.body.position >= 0;
-  const newPosition = req.body.position;
-
   Container.findById(req.params.container_id, function (err, container) {
     if (err) return next(err);
 
@@ -131,44 +127,14 @@ app.put('/containers/:container_id/subdocs/:id', function (req, res, next) {
     if (req.body.name) subdoc.name = req.body.name;
     if (req.body.value) subdoc.value = req.body.value;
 
-    // If position changed, temporarily remove the subdoc from the array.
-    if (positionChanged) {
-      subdoc.remove();
-    }
-
     return container.save((saveErr) => {
       if (saveErr) return next(saveErr);
 
-      // If the position changed, re-insert the subdoc at the new position.
-      if (positionChanged) {
-        const query = { _id: conatinerId };
-        const doc = {
-          $push: {
-            subdocs: {
-              $each: [subdoc],
-              $position: newPosition,
-            }
-          }
-        };
-
-        return Container
-          .update(query, doc)
-          .exec((updateErr, res) => {
-            if (updateErr) return next(updateErr);
-
-            res.json({
-              message: 'Subdoc updated.',
-              container,
-              subdoc
-            });
-          });
-      } else {
-        res.json({
-          message: 'Subdoc updated.',
-          container,
-          subdoc
-        });
-      }
+      res.json({
+        message: 'Subdoc updated.',
+        container,
+        subdoc
+      });
     });
   });
 });

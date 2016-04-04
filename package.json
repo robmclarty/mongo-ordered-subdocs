@@ -1,0 +1,37 @@
+{
+  "name": "mongo-ordered-subdocs",
+  "version": "1.0.0",
+  "description": "How to Manage an Ordered List in MongoDB Using Mongoose and Express",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/robmclarty/mongo-ordered-subdocs.git"
+  },
+  "keywords": [
+    "mongo",
+    "mongodb",
+    "mongoose",
+    "express",
+    "node",
+    "nodejs",
+    "ordered",
+    "position",
+    "subdocument",
+    "array"
+  ],
+  "author": "Rob McLarty",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/robmclarty/mongo-ordered-subdocs/issues"
+  },
+  "homepage": "https://github.com/robmclarty/mongo-ordered-subdocs#readme",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "kerberos": "0.0.19",
+    "mongoose": "^4.4.11"
+  }
+}

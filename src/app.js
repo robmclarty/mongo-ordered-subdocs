@@ -142,15 +142,16 @@ app.put('/containers/:container_id/subdocs/:id', function (req, res, next) {
 // Change position of subdoc for specific container.
 app.put('/containers/:container_id/subdocs/:id/position', function (req, res, next) {
   const containerId = req.params.container_id;
+  const subdocId = req.params.id;
   const newPosition = req.body.position;
 
   Container.findById(containerId, function (err, container) {
     if (err) return next(err);
 
     // Temporarily remove the subdoc from the array.
-    const subdoc = container.subdocs.id(req.params.id).remove();
+    const subdoc = container.subdocs.id(subdocId).remove();
 
-    return container.save((saveErr) => {
+    container.save((saveErr) => {
       if (saveErr) return next(saveErr);
 
       const query = { _id: containerId };
@@ -164,7 +165,7 @@ app.put('/containers/:container_id/subdocs/:id/position', function (req, res, ne
       };
 
       // Add subdoc back into array at the new position.
-      return Container
+      Container
         .update(query, doc)
         .exec((updateErr, dbRes) => {
           if (updateErr) return next(updateErr);
@@ -178,6 +179,35 @@ app.put('/containers/:container_id/subdocs/:id/position', function (req, res, ne
             subdoc
           });
         });
+    });
+  });
+});
+
+// Alternative method of changing the position of a subdoc for a specific container.
+app.put('/containers/:container_id/subdocs/:id/position2', function (req, res, next) {
+  const containerId = req.params.container_id;
+  const movingSubdocId = req.params.id;
+  const newPosition = req.body.position;
+
+  Container.findById(containerId, function (err, container) {
+    if (err) return next(err);
+
+    const movingSubdoc = container.subdocs.id(movingSubdocId);
+    const oldPosition = container.subdocs.findIndex((el, index) => {
+      return String(el._id) === movingSubdocId;
+    });
+
+    container.subdocs.splice(oldPosition, 1);
+    container.subdocs.splice(newPosition, 0, movingSubdoc);
+
+    container.save((saveErr) => {
+      if (saveErr) return next(saveErr);
+
+      res.json({
+        message: 'Subdoc updated.',
+        container,
+        subdoc
+      });
     });
   });
 });
